@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp3.1;net471</TargetFrameworks>
+    <RootNamespace>Console_Interactive_MultiTarget</RootNamespace>
+  </PropertyGroup>
+
+</Project>
