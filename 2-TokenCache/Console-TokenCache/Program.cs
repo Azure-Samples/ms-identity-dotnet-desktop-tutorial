@@ -53,33 +53,9 @@ namespace Console_TokenCache
             var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
             cacheHelper.RegisterCache(app.UserTokenCache);
 
-            // Subscribing to the CacheChanged event
-            cacheHelper.CacheChanged += (object sender, CacheChangedEventArgs eventArgs) =>
-            {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine($"Cache Changed, Added: {eventArgs.AccountsAdded.Count()} Removed: {eventArgs.AccountsRemoved.Count()}");
-                Console.ResetColor();
-            };
-
             string[] scopes = new[] { "user.read" };
-            AuthenticationResult result;
 
-            try
-            {
-                var accounts = await app.GetAccountsAsync();
-
-                // Try to acquire an access token from the cache. If an interaction is required, 
-                // MsalUiRequiredException will be thrown.
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                            .ExecuteAsync();
-            }
-            catch (MsalUiRequiredException)
-            {
-                // Acquiring an access token interactively. MSAL will cache it so we can use AcquireTokenSilent
-                // on future calls.
-                result = await app.AcquireTokenInteractive(scopes)
-                            .ExecuteAsync();
-            }
+            AuthenticationResult result = await AcquireToken(app, scopes);
 
             string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
             // Instantiating GraphServiceClient and using the access token acquired above.
@@ -95,10 +71,9 @@ namespace Console_TokenCache
             {
                 // Display menu
                 Console.WriteLine("------------ MENU ------------");
-                Console.WriteLine("1. Acquire Token Interactive");
-                Console.WriteLine("2. Acquire Token Silent");
-                Console.WriteLine("3. Display Accounts (reads the cache)");
-                Console.WriteLine("4. Clear cache");
+                Console.WriteLine("1. Acquire Token Silent / Interactive");
+                Console.WriteLine("2. Display Accounts (reads the cache)");
+                Console.WriteLine("3. Clear cache");
                 Console.WriteLine("x. Exit app");
                 Console.Write("Enter your Selection:");
                 char.TryParse(Console.ReadLine(), out var selection);
@@ -107,11 +82,11 @@ namespace Console_TokenCache
                 {
                     switch (selection)
                     {
-                        case '1': // Interactive
+                        case '1': // Silent / Interactive
                             Console.Clear();
-                            result = await app.AcquireTokenInteractive(scopes)
-                                        .ExecuteAsync()
-                                        .ConfigureAwait(false);
+                            Console.WriteLine("Acquiring token from the cache (silently), if it fails do it interactively");
+                            
+                            result = await AcquireToken(app, scopes);
 
                             graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
                             me = await graphClient.Me.Request().GetAsync();
@@ -119,43 +94,26 @@ namespace Console_TokenCache
                             DisplayGraphResult(result, me);
                             break;
 
-                        case '2': // Silent
+                        case '2': // Display Accounts
                             Console.Clear();
-                            Console.WriteLine("Acquiring token from the cache");
                             var accounts2 = await app.GetAccountsAsync().ConfigureAwait(false);
-                            var firstAccount = accounts2.FirstOrDefault();
-
-                            // this is expected to fail when account is null
-                            result = await app.AcquireTokenSilent(scopes, firstAccount)
-                                .ExecuteAsync()
-                                .ConfigureAwait(false);
-
-                            graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
-                            me = await graphClient.Me.Request().GetAsync();
-
-                            DisplayGraphResult(result, me);
-                            break;
-
-                        case '3': // Display Accounts
-                            Console.Clear();
-                            var accounts3 = await app.GetAccountsAsync().ConfigureAwait(false);
-                            if (!accounts3.Any())
+                            if (!accounts2.Any())
                             {
                                 Console.WriteLine("No accounts were found in the cache.");
                                 Console.Write(Environment.NewLine);
                             }
 
-                            foreach (var acc in accounts3)
+                            foreach (var acc in accounts2)
                             {
                                 Console.WriteLine($"Account for {acc.Username}");
                                 Console.Write(Environment.NewLine);
                             }
                             break;
 
-                        case '4': // Clear cache
+                        case '3': // Clear cache
                             Console.Clear();
-                            var accounts4 = await app.GetAccountsAsync().ConfigureAwait(false);
-                            foreach (var acc in accounts4)
+                            var accounts3 = await app.GetAccountsAsync().ConfigureAwait(false);
+                            foreach (var acc in accounts3)
                             {
                                 Console.WriteLine($"Removing account for {acc.Username}");
                                 Console.Write(Environment.NewLine);
@@ -178,6 +136,29 @@ namespace Console_TokenCache
                     Console.Read();
                 }
             }
+        }
+
+        private static async Task<AuthenticationResult> AcquireToken(IPublicClientApplication app, string[] scopes)
+        {
+            AuthenticationResult result;
+            try
+            {
+                var accounts = await app.GetAccountsAsync();
+
+                // Try to acquire an access token from the cache. If an interaction is required, 
+                // MsalUiRequiredException will be thrown.
+                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
+                            .ExecuteAsync();
+            }
+            catch (MsalUiRequiredException)
+            {
+                // Acquiring an access token interactively. MSAL will cache it so we can use AcquireTokenSilent
+                // on future calls.
+                result = await app.AcquireTokenInteractive(scopes)
+                            .ExecuteAsync();
+            }
+
+            return result;
         }
 
         private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)

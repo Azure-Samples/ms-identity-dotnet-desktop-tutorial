@@ -167,17 +167,7 @@ var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
 cacheHelper.RegisterCache(app.UserTokenCache);
 ```
 
-4. If you need to execute a custom code when the cache has changed, you can use the `CacheChanged` event.
-
-```c#
-// Subscribing to the CacheChanged event
-cacheHelper.CacheChanged += (object sender, CacheChangedEventArgs eventArgs) =>
-{
-      Console.WriteLine($"Cache Changed, Added: {eventArgs.AccountsAdded.Count()} Removed: {eventArgs.AccountsRemoved.Count()}");
-};
-```
-
-5. Since the cache is registered in the `PublicClientApplication` object, the cache may be accessed many times by MSAL. Some examples are:
+4. Since the cache is registered in the `PublicClientApplication` object, the cache may be accessed many times by MSAL. Some examples are:
 
    - `AcquireTokenInteractive` will add an account into the cache in case it is not there yet
    - `AcquireTokenSilent` will use the cached token for the account sent as parameter
