@@ -14,7 +14,7 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "This sample demonstrates a .NET Desktop (Console) application calling The Microsoft Graph"
+description: "This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph"
 ---
 
 # Using the Microsoft identity platform to call Microsoft Graph API from a multi-target console application.
@@ -25,10 +25,10 @@ description: "This sample demonstrates a .NET Desktop (Console) application call
 
 ### Overview
 
-This sample demonstrates a .NET Desktop (Console) application calling The Microsoft Graph.
+This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph.
 
 1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from Azure Active Directory (Azure AD):
-2. The access token is used as a bearer token to authenticate the user when calling the Microsoft Graph.
+2. The access token is used as a bearer token to authenticate the user when calling Microsoft Graph.
 
 ### Scenario
 
@@ -221,7 +221,7 @@ Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get supp
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
 Make sure that your questions or comments are tagged with [`azure-active-directory` `msal` `dotnet`].
 
-If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
+If you find a bug in the sample, please raise the issue on [GitHub Issues](../../../../issues).
 
 To provide a recommendation, visit the following [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory).
 
