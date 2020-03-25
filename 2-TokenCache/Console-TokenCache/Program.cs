@@ -21,12 +21,14 @@ namespace Console_TokenCache
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
-
+            
             configuration = builder.Build();
 
+            // Loading PublicClientApplicationOptions from the values set on appsettings.json
             appConfiguration = configuration
                 .Get<PublicClientApplicationOptions>();
 
+            // Building the AAD authority, https://login.microsoftonline.com/<tenant>
             _authority = string.Concat(appConfiguration.Instance, appConfiguration.TenantId);
 
             // Building a public client application
@@ -53,6 +55,7 @@ namespace Console_TokenCache
             var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
             cacheHelper.RegisterCache(app.UserTokenCache);
 
+            // Scope for Microsoft Graph
             string[] scopes = new[] { "user.read" };
 
             AuthenticationResult result = await AcquireToken(app, scopes);
@@ -61,7 +64,7 @@ namespace Console_TokenCache
             // Instantiating GraphServiceClient and using the access token acquired above.
             var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
 
-            // Calling the /me endpoint
+            // Calling the /me endpoint of Microsoft Graph
             var me = await graphClient.Me.Request().GetAsync();
 
             // Printing the results
