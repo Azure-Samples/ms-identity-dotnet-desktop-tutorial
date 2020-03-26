@@ -37,7 +37,7 @@ This sample demonstrates a .NET Desktop (Console) application leveraging token c
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload)
+- [Visual Studio 2019](https://aka.ms/vsdownload)
 - An Internet connection
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
 - A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
@@ -173,6 +173,16 @@ cacheHelper.RegisterCache(app.UserTokenCache);
    - `AcquireTokenSilent` will use the cached token for the account sent as parameter
    - `GetAccountsAsync` will return all account in the cache
    - `RemoveAsync` will remove the account from the cache
+
+### Using Embedded View - supported on **.NET 4.2.7 only**
+
+This sample is a multi-target framework (.NET Core and .NET 4.7.2) project, and MSAL has the option to use embedded view when acquiring a token interactively. You can test this functionality by running the project on .NET 4.7.2.
+
+```c#
+app.AcquireTokenInteractive(scopes)
+   .WithUseEmbeddedWebView(true) // currently only supported on .NET 4.2.7
+   .ExecuteAsync();
+```
 
 ## Community Help and Support
 
