@@ -23,11 +23,14 @@ namespace Console_Interactive_MultiTarget
 
             configuration = builder.Build();
 
+            // Loading PublicClientApplicationOptions from the values set on appsettings.json
             appConfiguration = configuration
                 .Get<PublicClientApplicationOptions>();
 
             string defaultUserFlow  = configuration.GetValue<string>("DefaultUserFlow");
             string domain = configuration.GetValue<string>("Domain");
+
+            // Building the B2C authority, https://<b2cInstance>/tfp/<tenantDomain>/<defaultUserFlow>
             _authority = string.Concat(appConfiguration.Instance, domain, "/", defaultUserFlow);
 
             // Building a public client application
@@ -36,7 +39,7 @@ namespace Console_Interactive_MultiTarget
                                                     .WithRedirectUri(appConfiguration.RedirectUri)
                                                     .Build();
 
-            string[] scopes = new[] { "user.read" };
+            string[] scopes = new[] { "https://graph.microsoft.com/user.read" };
             AuthenticationResult result;
 
             try
@@ -60,18 +63,11 @@ namespace Console_Interactive_MultiTarget
             // Instantiating GraphServiceClient and using the access token acquired above.
             var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
 
-            // Calling the /me endpoint
+            // Calling the /me endpoint of Microsoft Graph
             var me = await graphClient.Me.Request().GetAsync();
 
             // Printing the results
-            Console.Write(Environment.NewLine);
-            Console.WriteLine($"Hello {result.Account.Username}");
-            Console.Write(Environment.NewLine);
-            Console.WriteLine("-------- GRAPH RESULT --------");
-            Console.Write(Environment.NewLine);
-            Console.WriteLine($"Id: {me.Id}");
-            Console.WriteLine($"Display Name: {me.DisplayName}");
-            Console.WriteLine($"Email: {me.Mail}");
+            DisplayGraphResult(result, me);
         }
 
         private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
@@ -87,6 +83,22 @@ namespace Console_Interactive_MultiTarget
                                                                      }));
 
             return graphServiceClient;
+        }
+
+        private static void DisplayGraphResult(AuthenticationResult result, User me)
+        {
+            Console.Write(Environment.NewLine);
+            Console.WriteLine($"Hello {result.Account.Username}");
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("-------- GRAPH RESULT --------");
+            Console.Write(Environment.NewLine);
+            Console.WriteLine($"Id: {me.Id}");
+            Console.WriteLine($"Display Name: {me.DisplayName}");
+            Console.WriteLine($"Email: {me.Mail}");
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("------------------------------");
+            Console.Write(Environment.NewLine);
+            Console.Write(Environment.NewLine);
         }
     }
 }
