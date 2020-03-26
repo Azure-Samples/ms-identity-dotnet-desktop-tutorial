@@ -58,7 +58,7 @@ namespace Console_TokenCache
             // Scope for Microsoft Graph
             string[] scopes = new[] { "user.read" };
 
-            AuthenticationResult result = await AcquireToken(app, scopes);
+            AuthenticationResult result = await AcquireToken(app, scopes, false);
 
             string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
             // Instantiating GraphServiceClient and using the access token acquired above.
@@ -74,9 +74,10 @@ namespace Console_TokenCache
             {
                 // Display menu
                 Console.WriteLine("------------ MENU ------------");
-                Console.WriteLine("1. Acquire Token Silent / Interactive");
-                Console.WriteLine("2. Display Accounts (reads the cache)");
-                Console.WriteLine("3. Clear cache");
+                Console.WriteLine("1. Acquire Token Silent / Interactive (not using embeded view)");
+                Console.WriteLine("2. Acquire Token Silent / Interactive (using embeded view, currently not supported on .NET Core)");
+                Console.WriteLine("3. Display Accounts (reads the cache)");
+                Console.WriteLine("4. Clear cache");
                 Console.WriteLine("x. Exit app");
                 Console.Write("Enter your Selection:");
                 char.TryParse(Console.ReadLine(), out var selection);
@@ -89,7 +90,7 @@ namespace Console_TokenCache
                             Console.Clear();
                             Console.WriteLine("Acquiring token from the cache (silently), if it fails do it interactively");
                             
-                            result = await AcquireToken(app, scopes);
+                            result = await AcquireToken(app, scopes, false);
 
                             graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
                             me = await graphClient.Me.Request().GetAsync();
@@ -97,7 +98,19 @@ namespace Console_TokenCache
                             DisplayGraphResult(result, me);
                             break;
 
-                        case '2': // Display Accounts
+                        case '2': // Silent / Interactive with embedded view
+                            Console.Clear();
+                            Console.WriteLine("Acquiring token from the cache (silently), if it fails do it interactively using embedded view");
+
+                            result = await AcquireToken(app, scopes, true);
+
+                            graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
+                            me = await graphClient.Me.Request().GetAsync();
+
+                            DisplayGraphResult(result, me);
+                            break;
+
+                        case '3': // Display Accounts
                             Console.Clear();
                             var accounts2 = await app.GetAccountsAsync().ConfigureAwait(false);
                             if (!accounts2.Any())
@@ -113,7 +126,7 @@ namespace Console_TokenCache
                             }
                             break;
 
-                        case '3': // Clear cache
+                        case '4': // Clear cache
                             Console.Clear();
                             var accounts3 = await app.GetAccountsAsync().ConfigureAwait(false);
                             foreach (var acc in accounts3)
@@ -141,7 +154,7 @@ namespace Console_TokenCache
             }
         }
 
-        private static async Task<AuthenticationResult> AcquireToken(IPublicClientApplication app, string[] scopes)
+        private static async Task<AuthenticationResult> AcquireToken(IPublicClientApplication app, string[] scopes, bool useEmbaddedView)
         {
             AuthenticationResult result;
             try
@@ -158,6 +171,7 @@ namespace Console_TokenCache
                 // Acquiring an access token interactively. MSAL will cache it so we can use AcquireTokenSilent
                 // on future calls.
                 result = await app.AcquireTokenInteractive(scopes)
+                            .WithUseEmbeddedWebView(useEmbaddedView)
                             .ExecuteAsync();
             }
 
