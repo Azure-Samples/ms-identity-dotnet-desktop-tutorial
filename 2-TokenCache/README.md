@@ -174,13 +174,13 @@ cacheHelper.RegisterCache(app.UserTokenCache);
    - `GetAccountsAsync` will return all account in the cache
    - `RemoveAsync` will remove the account from the cache
 
-### Using Embedded View - supported on **.NET 4.2.7 only**
+### Using Embedded View - supported on **.NET Framework only**
 
-This sample is a multi-target framework (.NET Core and .NET 4.7.2) project, and MSAL has the option to use embedded view when acquiring a token interactively. You can test this functionality by running the project on .NET 4.7.2.
+This sample is a multi-target framework (.NET Core and .NET Framework) project, and MSAL has the option to use embedded view when acquiring a token interactively. You can test this functionality by running the project on .NET Framework.
 
 ```c#
 app.AcquireTokenInteractive(scopes)
-   .WithUseEmbeddedWebView(true) // currently only supported on .NET 4.2.7
+   .WithUseEmbeddedWebView(true) // currently only supported on .NET framework
    .ExecuteAsync();
 ```
 
