@@ -10,7 +10,7 @@ products:
 - aspnet
 - ms-graph
 description: "Learn how to acquire an access token on a console application."
-urlFragment: "dotnet-desktop-tutorial"
+urlFragment: "ms-identity-dotnet-desktop-tutorial"
 ---
 
 # Acquiring an access token using a console application and call APIs with the Microsoft identity platform for developers
