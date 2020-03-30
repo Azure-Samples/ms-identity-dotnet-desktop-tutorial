@@ -25,8 +25,8 @@ On later steps, you will learn how to enrich the console application with a cros
 
 This repository contains a progressive tutorial made of the following parts:
 
-| Sub folder                    | Description |
-|------------------------------ | ------------|
+| Sub folder                       | Description                      |
+| -------------------------------- | -------------------------------- |
 | [1. Calling Microsoft Graph](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/1-Calling-MSGraph) | This first part presents how to acquire an access token for Microsoft Graph, on Azure AD, Azure B2C and Azure National Clouds. Each scenario is separated on its correspondent sub-folder.|
 | [2. Cross platform token cache](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/2-TokenCache) | This step shows how to configure a cross platform token cache (Windows, Linux and MAC) leveraging `Microsoft.Identity.Client.Extensions.Msal` |
 
