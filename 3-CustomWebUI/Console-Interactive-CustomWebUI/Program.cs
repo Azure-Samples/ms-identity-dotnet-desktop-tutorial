@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Console_Interactive_CustomWebUI.CustomWebUI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensibility;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Console_Interactive_CustomWebUI
@@ -13,6 +16,10 @@ namespace Console_Interactive_CustomWebUI
         private static PublicClientApplicationOptions appConfiguration = null;
         private static IConfiguration configuration;
         private static string _authority;
+
+        // Since the browser is started via Process.Start, there is no control over it,
+        // So it is recommended to configure a timeout 
+        private const int TimeoutWaitingForBrowserMs = 30 * 1000; //30 seconds
 
         static async Task Main(string[] args)
         {
@@ -31,7 +38,7 @@ namespace Console_Interactive_CustomWebUI
             // Building a public client application
             var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
                                                     .WithAuthority(_authority)
-                                                    .WithRedirectUri(appConfiguration.RedirectUri)
+                                                    .WithRedirectUri(CustomBrowserWebUi.FindFreeLocalhostRedirectUri()) // required for CustomBrowserWebUi
                                                     .Build();
 
             string[] scopes = new[] { "user.read" };
@@ -44,14 +51,31 @@ namespace Console_Interactive_CustomWebUI
                 // Try to acquire an access token from the cache. If an interaction is required, 
                 // MsalUiRequiredException will be thrown.
                 result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                            .ExecuteAsync();
+                            .ExecuteAsync()
+                            .ConfigureAwait(false);
             }
             catch (MsalUiRequiredException)
             {
-                // Acquiring an access token interactively. MSAL will cache it so we can use AcquireTokenSilent
-                // on future calls.
-                result = await app.AcquireTokenInteractive(scopes)
-                            .ExecuteAsync();
+                try
+                {
+                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutWaitingForBrowserMs);
+
+                    // Acquiring an access token interactively using custom web UI.
+                    result = await app.AcquireTokenInteractive(scopes)
+                                .WithCustomWebUi(new CustomBrowserWebUi()) //Using our custom web ui
+                                .ExecuteAsync(cancellationTokenSource.Token)
+                                .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Failed to acquire a token interactively... ");
+                    Console.WriteLine(ex.Message);
+                    Console.ResetColor();
+
+                    return;
+                }
+                
             }
 
             string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
