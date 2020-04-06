@@ -2,6 +2,7 @@
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -44,11 +45,11 @@ namespace Console_Interactive_MultiTarget
 
             try
             {
-                var accounts = await app.GetAccountsAsync();
+                var account = GetAccountByUserFlow(await app.GetAccountsAsync(), defaultUserFlow);
 
                 // Try to acquire an access token from the cache. If an interaction is required, 
                 // MsalUiRequiredException will be thrown.
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
+                result = await app.AcquireTokenSilent(scopes, account)
                             .ExecuteAsync();
             }
             catch (MsalUiRequiredException)
@@ -99,6 +100,17 @@ namespace Console_Interactive_MultiTarget
             Console.WriteLine("------------------------------");
             Console.Write(Environment.NewLine);
             Console.Write(Environment.NewLine);
+        }
+
+        private static IAccount GetAccountByUserFlow(IEnumerable<IAccount> accounts, string userFlow)
+        {
+            foreach (var account in accounts)
+            {
+                string accountIdentifier = account.HomeAccountId.ObjectId.Split('.')[0];
+                if (accountIdentifier.EndsWith(userFlow.ToLower())) return account;
+            }
+
+            return null;
         }
     }
 }
