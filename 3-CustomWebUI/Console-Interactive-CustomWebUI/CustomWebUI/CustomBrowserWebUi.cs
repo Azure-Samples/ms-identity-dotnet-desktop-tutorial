@@ -112,12 +112,19 @@ namespace Console_Interactive_CustomWebUI.CustomWebUI
             }
         }
 
+        /// <summary>
+        /// Opens a new tab on the OS default browser and navigates to the authorization URI, while listening to its response.
+        /// Then, displays an HTML block based on the authorization response.
+        /// </summary>
         private async Task<Uri> InterceptAuthorizationUriAsync(
             Uri authorizationUri,
             Uri redirectUri,
             CancellationToken cancellationToken)
         {
+            // Opens a browser sending the authorization request
             OpenBrowser(authorizationUri.ToString());
+            
+            // Listens to the localhost socket that opened the request
             using (var listener = new SingleMessageTcpListener(redirectUri.Port))
             {
                 Uri authCodeUri = null;
@@ -127,6 +134,7 @@ namespace Console_Interactive_CustomWebUI.CustomWebUI
                         Trace.WriteLine("Intercepted an auth code url: " + uri.ToString());
                         authCodeUri = uri;
 
+                        // Displays the success or failure HTML block based on the authorization response
                         return GetMessageToShowInBroswerAfterAuth(uri);
                     },
                     cancellationToken)
@@ -136,6 +144,7 @@ namespace Console_Interactive_CustomWebUI.CustomWebUI
             }
         }
 
+        // Parses the authorization response and displays the success or failure HTML block accordingly
         private static string GetMessageToShowInBroswerAfterAuth(Uri uri)
         {
             // Parse the uri to understand if an error was returned. This is done just to show the user a nice error message in the browser.
