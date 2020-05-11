@@ -42,7 +42,7 @@ namespace Console_DeviceCodeFlow_MultiTarget
                 // Exception will be thrown.
                 result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
             }
-            catch(Exception ex)
+            catch(MsalUiRequiredException)
             {
                 result = await app.AcquireTokenWithDeviceCode(scopes, deviceCodeResult =>
                    {
