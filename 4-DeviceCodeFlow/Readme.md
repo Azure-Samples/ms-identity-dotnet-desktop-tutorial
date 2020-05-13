@@ -174,13 +174,13 @@ try
     result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
                   .ExecuteAsync();
 }
-catch
+catch(MsalUiRequiredException)
 {
     result = await app.AcquireTokenWithDeviceCode(scopes, deviceCodeResult =>
-       {
+    {
            Console.WriteLine(deviceCodeResult.Message);
            return Task.FromResult(0);
-       }).ExecuteAsync();
+    }).ExecuteAsync();
 }
 ```
 
