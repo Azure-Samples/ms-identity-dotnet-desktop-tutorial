@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Build 1-1-AzureAD
-      run: dotnet build --configuration Release --no-restore ./1-Calling-MSGraph/1-1-AzureAD/Console-Interactive.sln
+      run: dotnet build --configuration Release ./1-Calling-MSGraph/1-1-AzureAD/Console-Interactive.sln
     - name: Build 2-TokenCache
-      run: dotnet build --configuration Release --no-restore ./2-TokenCache/Console-TokenCache.sln
+      run: dotnet build --configuration Release ./2-TokenCache/Console-TokenCache.sln
       
