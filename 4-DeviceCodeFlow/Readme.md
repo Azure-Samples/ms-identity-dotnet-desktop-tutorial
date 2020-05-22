@@ -1,7 +1,7 @@
 ---
 services: active-directory
 platforms: dotnet
-author: v-shln
+author: Shama-K
 level: 100
 client: .NET Desktop (Console)
 service: Microsoft Graph
@@ -18,7 +18,7 @@ description: "This sample demonstrates a .NET Desktop (Console) application auth
 ---
 # Sign-in a user with the Microsoft identity platform using the device code flow and call Microsoft Graph.
 
-![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/<BuildNumber>/badge)
+![.NET Core](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/workflows/.NET%20Core/badge.svg)
 
 ## About this sample
 
@@ -141,7 +141,7 @@ The relevant code for this sample is in the `Program.cs` file, in the Main() met
 
 ```
 
-2- Create the MSAL public client application.
+1- Create the MSAL public client application.
 
 ```csharp
 var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
@@ -150,7 +150,7 @@ var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
                                                     .Build();
 ```
 
-3- Try to acquire an access token for Microsoft Graph silently, but if it fails, do it using `AcquireTokenWithDeviceCode()`.
+2- Try to acquire an access token for Microsoft Graph silently, but if it fails, do it using `AcquireTokenWithDeviceCode()`.
 This method will give you code, which will have the lifetime of 15 minutes, and URL for authentication.
 
 ```csharp
@@ -175,7 +175,7 @@ catch(MsalUiRequiredException)
 }
 ```
 
-4- Instantiate `GraphServiceClient` (from [Microsoft.Graph NuGet package](https://docs.microsoft.com/graph/sdks/sdk-installation)) using the Microsoft Graph access token acquired in the previous step.
+3- Instantiate `GraphServiceClient` (from [Microsoft.Graph NuGet package](https://docs.microsoft.com/graph/sdks/sdk-installation)) using the Microsoft Graph access token acquired in the previous step.
 
 ```csharp
 private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
@@ -193,7 +193,7 @@ private static GraphServiceClient GetGraphServiceClient(string accessToken, stri
 }
 ```
 
-5- Call Microsoft Graph `/me` endpoint, using [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/create-requests?tabs=CS).
+4- Call Microsoft Graph `/me` endpoint, using [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/create-requests?tabs=CS).
 
 ```csharp
 string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
