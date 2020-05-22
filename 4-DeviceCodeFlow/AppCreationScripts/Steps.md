@@ -1,7 +1,7 @@
 ---
 services: active-directory
 platforms: dotnet
-author: v-shln
+author: jmprieur
 level: 100
 client: .NET Desktop (Console)
 service: Microsoft Graph
@@ -14,9 +14,9 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "This sample demonstrates a .NET Desktop (Console) application authenticating with device code flow"
+description: "This sample demonstrates a .NET Desktop (Console) application calling The Microsoft Graph"
 ---
-# Sign-in a user with the Microsoft identity platform using the device code flow and call Microsoft Graph.
+# Sign-in a user with the Microsoft identity platform using the device code flow and  call Microsoft Graph on the user's behalf.
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/<BuildNumber>/badge)
 
@@ -26,7 +26,7 @@ description: "This sample demonstrates a .NET Desktop (Console) application auth
 
 This sample demonstrates a .NET Desktop (Console) application calling The Microsoft Graph.
 
-1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from Azure Active Directory (Azure AD), using device code flow:
+1. The .Net client .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from Azure Active Directory (Azure AD):
 2. The access token is used as a bearer token to authenticate the user when calling the Microsoft Graph.
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
@@ -35,8 +35,8 @@ This sample demonstrates a .NET Desktop (Console) application calling The Micros
 
 ### Scenario
 
-This console application displays a code and a URL. the user will open the URL in the browser and enter the code to start the authentication process.
-Once the authentication process completes, the console application will resume and call Microsoft Graph on behalf of the user.
+> Describe the scenario
+> Insert a screen copy of the client
 
 ## How to run this sample
 
@@ -120,6 +120,11 @@ As a first step you'll need to:
    - In the **Delegated permissions** section, select the **User.Read** in the list. Use the search box if necessary.
    - Click on the **Add permissions** button at the bottom.
 
+1. At this stage, the permissions are assigned correctly but since the client app does not allow users to interact, the user's themselves cannot consent to these permissions. 
+   To get around this problem, we'd let the [tenant administrator consent on behalf of all users in the tenant](https://docs.microsoft.com/azure/active-directory/develop/v2-admin-consent).
+   Click the **Grant admin consent for {tenant}** button, and then select **Yes** when you are asked if you want to grant consent for the
+   requested permissions for all account in the tenant.You need to be an the tenant admin to be able to carry out this operation.
+
 ##### Configure the  client app (Console-DeviceCodeFlow-MultiTarget-v2) to use your app registration
 
 Open the project in your IDE (like Visual Studio) to configure the code.
@@ -131,82 +136,15 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 ### Step 4: Run the sample
 
-Clean the solution, rebuild the solution, and run it.
+Clean the solution, rebuild the solution, and run it.  You might want to go into the solution properties and set both projects as startup projects, with the service project starting first.
 
-Use a web browser to open the Url (https://microsoft.com/devicelogin) that is displayed in console app. Input the code presented in the console , sign-in and check the result of the operation back in the console.
+> Explain how to Explore the sample.
 
-## About the code
-
-The relevant code for this sample is in the `Program.cs` file, in the Main() method. The steps are:
-
-```
-
-2- Create the MSAL public client application.
-
-```csharp
-var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
-                                                   .WithAuthority(_authority)
-                                                    .WithDefaultRedirectUri()
-                                                    .Build();
-```
-
-3- Try to acquire an access token for Microsoft Graph silently, but if it fails, do it using `AcquireTokenWithDeviceCode()`.
-This method will give you code, which will have the lifetime of 15 minutes, and URL for authentication.
-
-```csharp
-string[] scopes = new[] { "user.read" };
-
-AuthenticationResult result;
-
-try
-{
-    var accounts = await app.GetAccountsAsync();
-
-    result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                  .ExecuteAsync();
-}
-catch(MsalUiRequiredException)
-{
-    result = await app.AcquireTokenWithDeviceCode(scopes, deviceCodeResult =>
-    {
-           Console.WriteLine(deviceCodeResult.Message);
-           return Task.FromResult(0);
-    }).ExecuteAsync();
-}
-```
-
-4- Instantiate `GraphServiceClient` (from [Microsoft.Graph NuGet package](https://docs.microsoft.com/graph/sdks/sdk-installation)) using the Microsoft Graph access token acquired in the previous step.
-
-```csharp
-private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
-{
-    GraphServiceClient graphServiceClient = new GraphServiceClient(graphApiUrl,
-                                                new DelegateAuthenticationProvider(
-                                                    async (requestMessage) =>
-                                                    {
-                                                        await Task.Run(() =>
-                                                        {
-                                                            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                        });
-                                                    }));
-    return graphServiceClient;
-}
-```
-
-5- Call Microsoft Graph `/me` endpoint, using [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/create-requests?tabs=CS).
-
-```csharp
-string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
-
-var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
-
-var me = await graphClient.Me.Request().GetAsync();
-```
 ## Community Help and Support
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
 Ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
-Make sure that your questions or comments are tagged with [`azure-active-directory` `msal` `dotnet`].
+Make sure that your questions or comments are tagged with [`azure-active-directory` `adal` `msal` `dotnet`].
 
 If you find a bug in the sample, please raise the issue on [GitHub Issues](../../issues).
 
@@ -222,15 +160,32 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 For more information, see MSAL.NET's conceptual documentation:
 
-- [MSAL.NET's conceptual documentation](https://aka.ms/msal-net)
-- [Device code flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-device-code)
+> Provide links to the flows from the conceptual documentation and remove some that do not apply, like either keep ADAL or MSAL related links depending on the sample
+> for instance:
+
+- Learn how [Microsoft.Identity.Web](http://aka.ms/ms-identity-web) works, in particular hooks-up to the ASP.NET Core ODIC events
+
 - [Microsoft identity platform (Azure Active Directory for developers)](https://docs.microsoft.com/azure/active-directory/develop/)
-- [Quickstart: Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
-- [Quickstart: Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+- [Quickstart: Register an application with the Microsoft identity platform (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
+- [Quickstart: Configure a client application to access web APIs (Preview)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
+
 - [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
 - [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
 - [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+
+<-- 
+   Uncomment for a V1 sample 
+- [ADAL.NET's conceptual documentation](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki)
+- [Customizing Token cache serialization](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Token-cache-serialization)
+- [Recommended pattern to acquire a token](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/AcquireTokenSilentAsync-using-a-cached-token#recommended-pattern-to-acquire-a-token)
+- [Acquiring tokens interactively in public client applications](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Acquiring-tokens-interactively---Public-client-application-flows)
+-->
+
+- [MSAL.NET's conceptual documentation](https://aka.ms/msal-net)
+- [Customizing Token cache serialization](https://aka.ms/msal-net-token-cache-serialization)
+- [Types of Applications](https://aka.ms/msal-net-client-applications)
 - [Acquiring Tokens](https://aka.ms/msal-net-acquiring-tokens)
+
 - [National Clouds](https://docs.microsoft.com/azure/active-directory/develop/authentication-national-cloud#app-registration-endpoints)
 
 For more information about how OAuth 2.0 protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).

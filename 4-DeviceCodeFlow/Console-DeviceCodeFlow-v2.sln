@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console-DeviceCodeFlow-MultiTarget-v2", "Console-DeviceCodeFlow-MultiTarget\Console-DeviceCodeFlow-MultiTarget-v2.csproj", "{23239B0D-FF39-43E7-998D-BCC885D918C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console-DeviceCodeFlow-v2", "Console-DeviceCodeFlow-v2\Console-DeviceCodeFlow-v2.csproj", "{23239B0D-FF39-43E7-998D-BCC885D918C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "Using the Microsoft identity platform to call Microsoft Graph API from a multi-target console application with device code flow.",
+    "Title": "Sign-in a user with the Microsoft identity platform using the device code flow and  call Microsoft Graph on the user's behalf.",
     "Level": 100,
     "Client": ".NET Desktop (Console)",
     "Service": "Microsoft Graph",
@@ -37,7 +37,7 @@
     {
       "App": "client",
       "SettingKind": "JSon",
-      "SettingFile": "\\..\\Console-DeviceCodeFlow-MultiTarget\\appsettings.json",
+      "SettingFile": "\\..\\Console-DeviceCodeFlow-v2\\appsettings.json",
       "Mappings": [
         {
           "key": "ClientId",

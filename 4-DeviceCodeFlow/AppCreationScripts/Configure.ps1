@@ -206,7 +206,7 @@ Function ConfigureApplications
    Write-Host "Granted permissions."
 
    # Update config file for 'client'
-   $configFile = $pwd.Path + "\..\Console-DeviceCodeFlow-MultiTarget\appsettings.json"
+   $configFile = $pwd.Path + "\..\Console-DeviceCodeFlow-v2\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "ClientId" = $clientAadApplication.AppId;"TenantId" = $tenantId };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary

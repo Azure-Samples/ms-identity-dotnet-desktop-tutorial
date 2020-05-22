@@ -1,0 +1,37 @@
+{
+  /*
+  This section describes the Azure AD  Applications to configure, and their dependencies
+  */
+
+  "Sample": {
+    "Title": "Sign-in a user with the Microsoft identity platform using the device code flow and  call Microsoft Graph on the user's behalf.",
+    "Level": 100,
+    "Client": ".NET Desktop (Console)"
+  },
+  "AppRegistrations": [
+    {
+      "x-ms-id": "ms-identity-dotnet-desktop-tutorial",
+      "x-ms-name": "ms-identity-dotnet-desktop-tutorial",
+      "x-ms-version": "2.0",
+      "replyUrlsWithType": [
+        {
+          "url": "https://login.microsoftonline.com/common/oauth2/nativeclient",
+          "type": "InstalledClient"
+        }
+      ],
+      "requiredResourceAccess": [
+        {
+          "x-ms-resourceAppName": "Microsoft Graph",
+          "resourceAppId": "00000003-0000-0000-c000-000000000000",
+          "resourceAccess": [
+            {
+              "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+              "type": "Scope",
+              "x-ms-name": "user.read"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
