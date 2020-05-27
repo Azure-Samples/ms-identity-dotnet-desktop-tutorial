@@ -74,6 +74,8 @@ namespace Console_Interactive_CustomWebUI
             Console.WriteLine($"Id: {me.Id}");
             Console.WriteLine($"Display Name: {me.DisplayName}");
             Console.WriteLine($"Email: {me.Mail}");
+
+            Console.ReadKey();
         }
 
         private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
@@ -100,8 +102,6 @@ namespace Console_Interactive_CustomWebUI
         {
             return new SystemWebViewOptions
             {
-                BrowserRedirectSuccess = new Uri("https://contoso.com"),
-
                 HtmlMessageSuccess = @"<html style='font-family: sans-serif;'>
                                       <head><title>Authentication Complete</title></head>
                                       <body style='text-align: center;'>
