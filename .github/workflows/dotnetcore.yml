@@ -1,0 +1,24 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Build 1-1-AzureAD
+      run: dotnet build --configuration Release .\1-Calling-MSGraph\1-1-AzureAD\Console-Interactive.sln
+    - name: Build 2-TokenCache
+      run: dotnet build --configuration Release .\2-TokenCache\Console-TokenCache.sln
+      
