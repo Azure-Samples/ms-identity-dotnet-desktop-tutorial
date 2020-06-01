@@ -12,7 +12,10 @@ namespace Console_DeviceCodeFlow_MultiTarget
     {
         private static PublicClientApplicationOptions appConfiguration = null;
         private static IConfiguration configuration;
-        private static string _authority;
+        private static string MSGraphURL = "https://graph.microsoft.com/v1.0/";
+       
+        // The MSAL Public client app
+        private static IPublicClientApplication application;
 
         private static async Task Main(string[] args)
         {
@@ -25,83 +28,87 @@ namespace Console_DeviceCodeFlow_MultiTarget
 
             appConfiguration = configuration.Get<PublicClientApplicationOptions>();
 
-            // build the AAd authority Url
-            _authority = string.Concat(appConfiguration.Instance, appConfiguration.TenantId);
+            // Sign-in user using MSAL and obtain an access token for MS Graph
+            GraphServiceClient graphClient = await SignInAndInitializeGraphServiceClient(appConfiguration);
 
-            // Initialize MSAL
-            var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
-                                                    .WithAuthority(_authority)
+            // Call the /me endpoint of MS Graph
+            await CallMSGraph(graphClient);
+        }
+
+        private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+        {
+            // build the AAd authority Url
+            string authority = string.Concat(configuration.Instance, configuration.TenantId);
+
+            // Initialize the MSAL library by building a public client application
+            application = PublicClientApplicationBuilder.Create(configuration.ClientId)
+                                                    .WithAuthority(authority)
                                                     .WithDefaultRedirectUri()
                                                     .Build();
 
-            // Scopes for MS graph that we'd be requesting a token for
+            // We intend to obtain a token for Graph for the following scopes (permissions)
             string[] scopes = new[] { "user.read" };
 
             AuthenticationResult result;
 
             try
             {
-                var accounts = await app.GetAccountsAsync();
+                var accounts = await application.GetAccountsAsync();
                 // Try to acquire an access token from the cache. If device code is required, Exception will be thrown.
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
+                result = await application.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
             }
             catch (MsalUiRequiredException)
             {
-                result = await app.AcquireTokenWithDeviceCode(scopes, deviceCodeResult =>
+                result = await application.AcquireTokenWithDeviceCode(scopes, deviceCodeResult =>
                    {
-                       // This will print the message on the console which tells the user where to go sign-in using
-                       // a separate browser and the code to enter once they sign in.
-                       // The AcquireTokenWithDeviceCode() method will poll the server after firing this
-                       // device code callback to look for the successful login of the user via that browser.
-                       // This background polling (whose interval and timeout data is also provided as fields in the
-                       // deviceCodeCallback class) will occur until:
-                       // * The user has successfully logged in via browser and entered the proper code
-                       // * The timeout specified by the server for the lifetime of this code (typically ~15 minutes) has been reached
-                       // * The developing application calls the Cancel() method on a CancellationToken sent into the method.
-                       //   If this occurs, an OperationCanceledException will be thrown (see catch below for more details).
-                       Console.WriteLine(deviceCodeResult.Message);
+               // This will print the message on the console which tells the user where to go sign-in using
+               // a separate browser and the code to enter once they sign in.
+               // The AcquireTokenWithDeviceCode() method will poll the server after firing this
+               // device code callback to look for the successful login of the user via that browser.
+               // This background polling (whose interval and timeout data is also provided as fields in the
+               // deviceCodeCallback class) will occur until:
+               // * The user has successfully logged in via browser and entered the proper code
+               // * The timeout specified by the server for the lifetime of this code (typically ~15 minutes) has been reached
+               // * The developing application calls the Cancel() method on a CancellationToken sent into the method.
+               //   If this occurs, an OperationCanceledException will be thrown (see catch below for more details).
+               Console.WriteLine(deviceCodeResult.Message);
                        return Task.FromResult(0);
                    }).ExecuteAsync();
             }
+            return result.AccessToken;
+        }
 
-            string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
+        /// <summary>
+        /// Sign in user using MSAL and obtain a token for MS Graph
+        /// </summary>
+        /// <returns></returns>
+        private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration)
+        {
+            GraphServiceClient graphClient = new GraphServiceClient(MSGraphURL,
+                new DelegateAuthenticationProvider(async (requestMessage) =>
+                {
+                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration));
+                }));
 
-            var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
+            return await Task.FromResult(graphClient);
+        }
 
-            // Call the MS Graph /me endpoint
+        /// <summary>
+        /// Call MS Graph and print results
+        /// </summary>
+        /// <param name="graphClient"></param>
+        /// <returns></returns>
+        private static async Task CallMSGraph(GraphServiceClient graphClient)
+        {
             var me = await graphClient.Me.Request().GetAsync();
 
-
+            // Printing the results
             Console.Write(Environment.NewLine);
-            Console.WriteLine($"Hello {result.Account.Username}");
-            Console.Write(Environment.NewLine);
-
-            // Print the signed-in user's fetched from  MS Graph
-            Console.WriteLine("-------- User's info from MS Graph --------");
+            Console.WriteLine("-------- Data from call to MS Graph --------");
             Console.Write(Environment.NewLine);
             Console.WriteLine($"Id: {me.Id}");
             Console.WriteLine($"Display Name: {me.DisplayName}");
             Console.WriteLine($"Email: {me.Mail}");
-        }
-
-        /// <summary>
-        /// Initializes the Graph SDK
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <param name="graphApiUrl"></param>
-        /// <returns></returns>
-        private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
-        {
-            GraphServiceClient graphServiceClient = new GraphServiceClient(graphApiUrl,
-                                                        new DelegateAuthenticationProvider(
-                                                            async (requestMessage) =>
-                                                            {
-                                                                await Task.Run(() =>
-                                                                {
-                                                                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                                });
-                                                            }));
-            return graphServiceClient;
         }
     }
 }
