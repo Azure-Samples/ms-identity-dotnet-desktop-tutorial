@@ -159,7 +159,7 @@ The relevant code for this sample is in the `Program.cs` file, in the Main() met
          .Get<PublicClientApplicationOptions>();
 ```
 
-2- The method **SignInUserAndGetTokenUsingMSAL** contains the code to initialize MSAL and get an Access token for MS Graph.
+2- The method **SignInUserAndGetTokenUsingMSAL** contains the code to initialize MSAL and get an access token for MS Graph.
 
 ```csharp
 private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
@@ -172,7 +172,7 @@ private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApp
                                              .WithDefaultRedirectUri()
                                              .Build();
 
-   // We target to obtain a token for Graph for the following scopes (permissions)
+   // We intend to obtain a token for Graph for the following scopes (permissions)
    string[] scopes = new[] { "user.read" };
 
    AuthenticationResult result;
@@ -217,7 +217,7 @@ private static async Task CallMSGraph(GraphServiceClient graphClient)
 
             // Printing the results
             Console.Write(Environment.NewLine);
-            Console.WriteLine("-------- Data from call to MS Graph call  --------");
+            Console.WriteLine("-------- Data from call to MS Graph --------");
             Console.Write(Environment.NewLine);
             Console.WriteLine($"Id: {me.Id}");
             Console.WriteLine($"Display Name: {me.DisplayName}");

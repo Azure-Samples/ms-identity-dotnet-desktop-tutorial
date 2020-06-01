@@ -40,7 +40,7 @@ namespace Console_Interactive_MultiTarget
         {
             string authority = string.Concat(configuration.Instance, configuration.TenantId);
 
-            // Initialize the MSAL library by buinding a public client application
+            // Initialize the MSAL library by building a public client application
             application = PublicClientApplicationBuilder.Create(configuration.ClientId)
                                                     .WithAuthority(authority)
                                                     .WithDefaultRedirectUri()
@@ -92,7 +92,7 @@ namespace Console_Interactive_MultiTarget
 
             // Printing the results
             Console.Write(Environment.NewLine);
-            Console.WriteLine("-------- Data from call to MS Graph call  --------");
+            Console.WriteLine("-------- Data from call to MS Graph --------");
             Console.Write(Environment.NewLine);
             Console.WriteLine($"Id: {me.Id}");
             Console.WriteLine($"Display Name: {me.DisplayName}");
