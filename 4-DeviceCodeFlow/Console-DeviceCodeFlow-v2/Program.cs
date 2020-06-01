@@ -12,7 +12,7 @@ namespace Console_DeviceCodeFlow_MultiTarget
     {
         private static PublicClientApplicationOptions appConfiguration = null;
         private static IConfiguration configuration;
-        private static string MSGraphURL = "https://graph.microsoft.com/v1.0/";
+        private static string MSGraphURL;
        
         // The MSAL Public client app
         private static IPublicClientApplication application;
@@ -27,6 +27,8 @@ namespace Console_DeviceCodeFlow_MultiTarget
             configuration = builder.Build();
 
             appConfiguration = configuration.Get<PublicClientApplicationOptions>();
+
+            MSGraphURL = configuration.GetValue<string>("GraphApiUrl");
 
             // Sign-in user using MSAL and obtain an access token for MS Graph
             GraphServiceClient graphClient = await SignInAndInitializeGraphServiceClient(appConfiguration);
