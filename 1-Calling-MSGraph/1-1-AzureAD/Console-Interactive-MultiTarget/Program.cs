@@ -46,7 +46,7 @@ namespace Console_Interactive_MultiTarget
                                                     .WithDefaultRedirectUri()
                                                     .Build();
 
-            // We target to obtain a token for Graph for the following scopes (permissions)
+            // We intend to obtain a token for Graph for the following scopes (permissions)
             string[] scopes = new[] { "user.read" };
 
             AuthenticationResult result;
