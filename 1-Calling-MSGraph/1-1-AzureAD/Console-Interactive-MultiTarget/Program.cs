@@ -38,7 +38,7 @@ namespace Console_Interactive_MultiTarget
             await CallMSGraph(graphClient);
         }
 
-        private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+        private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
         {
             string authority = string.Concat(configuration.Instance, configuration.TenantId);
 
