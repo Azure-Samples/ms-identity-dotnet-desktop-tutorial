@@ -37,7 +37,7 @@ namespace Console_DeviceCodeFlow_MultiTarget
             await CallMSGraph(graphClient);
         }
 
-        private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+        private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
         {
             // build the AAd authority Url
             string authority = string.Concat(configuration.Instance, configuration.TenantId);

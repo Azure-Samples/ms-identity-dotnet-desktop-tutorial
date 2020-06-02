@@ -155,7 +155,7 @@ Try to acquire an access token for Microsoft Graph silently, but if it fails, do
 This method will give you code, which will have the lifetime of 15 minutes, and URL for authentication.
 
 ```csharp
-private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
 {
     // build the AAd authority Url
     string authority = string.Concat(configuration.Instance, configuration.TenantId);
