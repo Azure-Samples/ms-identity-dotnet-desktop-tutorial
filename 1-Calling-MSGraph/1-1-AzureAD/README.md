@@ -162,7 +162,7 @@ The relevant code for this sample is in the `Program.cs` file, in the Main() met
 2- The method **SignInUserAndGetTokenUsingMSAL** contains the code to initialize MSAL and get an access token for MS Graph.
 
 ```csharp
-private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
 {
    string authority = string.Concat(configuration.Instance, configuration.TenantId);
 
