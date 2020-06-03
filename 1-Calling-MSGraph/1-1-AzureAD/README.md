@@ -162,7 +162,7 @@ The relevant code for this sample is in the `Program.cs` file, in the Main() met
 2- The method **SignInUserAndGetTokenUsingMSAL** contains the code to initialize MSAL and get an access token for MS Graph.
 
 ```csharp
-private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
+private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
 {
    string authority = string.Concat(configuration.Instance, configuration.TenantId);
 
@@ -171,6 +171,9 @@ private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApp
                                              .WithAuthority(authority)
                                              .WithDefaultRedirectUri()
                                              .Build();
+
+   // We intend to obtain a token for Graph for the following scopes (permissions)
+   string[] scopes = new[] { "user.read" };
 
    AuthenticationResult result;
    try
@@ -193,12 +196,12 @@ private static async Task<String> SignInUserAndGetTokenUsingMSAL(PublicClientApp
 3- The method **SignInAndInitializeGraphServiceClient** initializes the Graph SDK
 
 ```csharp
- private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
+ private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration)
 {
    GraphServiceClient graphClient = new GraphServiceClient(MSGraphURL,
          new DelegateAuthenticationProvider(async (requestMessage) =>
          {
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration, scopes));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration));
          }));
 
    return await Task.FromResult(graphClient);
