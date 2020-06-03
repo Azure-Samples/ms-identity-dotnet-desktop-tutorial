@@ -53,6 +53,7 @@ From your shell or command line:
 
 ```Shell
 git clone https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial.git
+cd "4-DeviceCodeFlow"
 ```
 
 or download and extract the repository .zip file.
