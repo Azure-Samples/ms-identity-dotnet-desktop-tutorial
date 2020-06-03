@@ -155,7 +155,7 @@ Try to acquire an access token for Microsoft Graph silently, but if it fails, do
 This method will give you code, which will have the lifetime of 15 minutes, and URL for authentication.
 
 ```csharp
-private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
 {
     // build the AAd authority Url
     string authority = string.Concat(configuration.Instance, configuration.TenantId);
@@ -165,8 +165,6 @@ private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApp
                                             .WithAuthority(authority)
                                             .WithDefaultRedirectUri()
                                             .Build();
-
-    string[] scopes = new[] { "user.read" };
 
     AuthenticationResult result;
 
@@ -190,12 +188,12 @@ private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApp
 3- The method **SignInAndInitializeGraphServiceClient** initializes the Graph SDK.
 
 ```csharp
-private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration)
+private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
 {
     GraphServiceClient graphClient = new GraphServiceClient(MSGraphURL,
         new DelegateAuthenticationProvider(async (requestMessage) =>
         {
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration));
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration, scopes));
         }));
 
     return await Task.FromResult(graphClient);

@@ -27,17 +27,20 @@ namespace Console_DeviceCodeFlow_MultiTarget
             configuration = builder.Build();
 
             appConfiguration = configuration.Get<PublicClientApplicationOptions>();
+            
+            // We intend to obtain a token for Graph for the following scopes (permissions)
+            string[] scopes = new[] { "user.read" };
 
             MSGraphURL = configuration.GetValue<string>("GraphApiUrl");
 
             // Sign-in user using MSAL and obtain an access token for MS Graph
-            GraphServiceClient graphClient = await SignInAndInitializeGraphServiceClient(appConfiguration);
+            GraphServiceClient graphClient = await SignInAndInitializeGraphServiceClient(appConfiguration, scopes);
 
             // Call the /me endpoint of MS Graph
             await CallMSGraph(graphClient);
         }
 
-        private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration)
+        private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
         {
             // build the AAd authority Url
             string authority = string.Concat(configuration.Instance, configuration.TenantId);
@@ -48,9 +51,7 @@ namespace Console_DeviceCodeFlow_MultiTarget
                                                     .WithDefaultRedirectUri()
                                                     .Build();
 
-            // We intend to obtain a token for Graph for the following scopes (permissions)
-            string[] scopes = new[] { "user.read" };
-
+          
             AuthenticationResult result;
 
             try
@@ -84,12 +85,12 @@ namespace Console_DeviceCodeFlow_MultiTarget
         /// Sign in user using MSAL and obtain a token for MS Graph
         /// </summary>
         /// <returns></returns>
-        private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration)
+        private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
         {
             GraphServiceClient graphClient = new GraphServiceClient(MSGraphURL,
                 new DelegateAuthenticationProvider(async (requestMessage) =>
                 {
-                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration));
+                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration, scopes));
                 }));
 
             return await Task.FromResult(graphClient);
