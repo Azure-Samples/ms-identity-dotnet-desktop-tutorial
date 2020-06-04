@@ -84,13 +84,13 @@ namespace Console_Interactive_CustomWebUI
             try
             {
                 var accounts = await application.GetAccountsAsync();
-                // Try to acquire an access token from the cache. If device code is required, Exception will be thrown.
+
+                // Try to acquire an access token from the cache, if UI interaction is required, MsalUiRequiredException will be thrown.
                 result = await application.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
             }
             catch (MsalUiRequiredException)
             {
-                // Acquiring an access token interactively. MSAL will cache it so we can use AcquireTokenSilent
-                // on future calls.
+                // Acquiring an access token interactively using the custom html.
                 result = await application.AcquireTokenInteractive(scopes)
                             .WithSystemWebViewOptions(_customWebView) // Using the custom html
                             .ExecuteAsync();
