@@ -177,6 +177,14 @@ public async Task<Uri> AcquireAuthorizationCodeAsync(
 }
 ```
 
+The custom web UI can be used in the `AcquireTokenInteractive()` method:
+
+```c#
+ await application.AcquireTokenInteractive(scopes)
+   .WithCustomWebUi(new CustomBrowserWebUi()) //Using our custom web ui
+   .ExecuteAsync();
+```
+
 2- The interception method, `InterceptAuthorizationUriAsync`, opens a new tab on the OS default browser and navigates to the authorization URI, while listening to its response. Then, it displays an HTML block based on the authorization response.
 
 ```csharp
