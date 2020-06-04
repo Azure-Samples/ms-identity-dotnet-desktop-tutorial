@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Console_Interactive_CustomWebUI.CustomWebUI
+namespace Console_Interactive_CustomWebUI.CustomWebBrowser
 {
     internal class CustomBrowserWebUi : ICustomWebUi
     {

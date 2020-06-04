@@ -1,4 +1,4 @@
-﻿using Console_Interactive_CustomWebUI.CustomWebUI;
+﻿using Console_Interactive_CustomWebUI.CustomWebBrowser;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
@@ -6,7 +6,6 @@ using Microsoft.Identity.Client.Extensibility;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Console_Interactive_CustomWebUI
@@ -15,7 +14,10 @@ namespace Console_Interactive_CustomWebUI
     {
         private static PublicClientApplicationOptions appConfiguration = null;
         private static IConfiguration configuration;
-        private static string _authority;
+        private static string graphURL;
+
+        // The MSAL Public client app
+        private static IPublicClientApplication application;
 
         // Since the browser is started via Process.Start, there is no control over it,
         // So it is recommended to configure a timeout 
@@ -33,82 +35,88 @@ namespace Console_Interactive_CustomWebUI
             appConfiguration = configuration
                 .Get<PublicClientApplicationOptions>();
 
-            _authority = string.Concat(appConfiguration.Instance, appConfiguration.TenantId);
+            string[] scopes = new[] { "user.read" };
 
-            // Building a public client application
-            var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
-                                                    .WithAuthority(_authority)
+            graphURL = configuration.GetValue<string>("GraphApiUrl");
+
+            // Sign-in user using MSAL and obtain an access token for MS Graph
+            GraphServiceClient graphClient = await SignInAndInitializeGraphServiceClient(appConfiguration, scopes);
+
+            // Call the /me endpoint of MS Graph
+            await CallMSGraph(graphClient);
+
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Sign in user using MSAL and obtain a token for MS Graph
+        /// </summary>
+        /// <returns></returns>
+        private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
+        {
+            GraphServiceClient graphClient = new GraphServiceClient(graphURL,
+                new DelegateAuthenticationProvider(async (requestMessage) =>
+                {
+                    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration, scopes));
+                }));
+
+            return await Task.FromResult(graphClient);
+        }
+
+        /// <summary>
+        /// Signs in the user using the device code flow and obtains an Access token for MS Graph
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="scopes"></param>
+        /// <returns></returns>
+        private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
+        {
+            // build the AAd authority Url
+            string authority = string.Concat(configuration.Instance, configuration.TenantId);
+
+            // Initialize the MSAL library by building a public client application
+            application = PublicClientApplicationBuilder.Create(configuration.ClientId)
+                                                    .WithAuthority(authority)
                                                     .WithRedirectUri(CustomBrowserWebUi.FindFreeLocalhostRedirectUri()) // required for CustomBrowserWebUi
                                                     .Build();
 
-            string[] scopes = new[] { "user.read" };
+
             AuthenticationResult result;
 
             try
             {
-                var accounts = await app.GetAccountsAsync();
+                var accounts = await application.GetAccountsAsync();
 
-                // Try to acquire an access token from the cache. If an interaction is required, 
-                // MsalUiRequiredException will be thrown.
-                result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                            .ExecuteAsync()
-                            .ConfigureAwait(false);
+                // Try to acquire an access token from the cache, if UI interaction is required, MsalUiRequiredException will be thrown.
+                result = await application.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
             }
             catch (MsalUiRequiredException)
             {
-                try
-                {
-                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutWaitingForBrowserMs);
-
-                    // Acquiring an access token interactively using custom web UI.
-                    result = await app.AcquireTokenInteractive(scopes)
-                                .WithCustomWebUi(new CustomBrowserWebUi()) //Using our custom web ui
-                                .ExecuteAsync(cancellationTokenSource.Token)
-                                .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Failed to acquire a token interactively... ");
-                    Console.WriteLine(ex.Message);
-                    Console.ResetColor();
-
-                    return;
-                }
-                
+                // Acquiring an access token interactively using custom web UI.
+                result = await application.AcquireTokenInteractive(scopes)
+                            .WithCustomWebUi(new CustomBrowserWebUi()) //Using our custom web ui
+                            .ExecuteAsync();
             }
 
-            string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
-            // Instantiating GraphServiceClient and using the access token acquired above.
-            var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
+            return result.AccessToken;
+        }
 
-            // Calling the /me endpoint
+        /// <summary>
+        /// Call MS Graph and print results
+        /// </summary>
+        /// <param name="graphClient"></param>
+        /// <returns></returns>
+        private static async Task CallMSGraph(GraphServiceClient graphClient)
+        {
             var me = await graphClient.Me.Request().GetAsync();
 
             // Printing the results
             Console.Write(Environment.NewLine);
-            Console.WriteLine($"Hello {result.Account.Username}");
-            Console.Write(Environment.NewLine);
-            Console.WriteLine("-------- GRAPH RESULT --------");
+            Console.WriteLine("-------- Data from call to MS Graph --------");
             Console.Write(Environment.NewLine);
             Console.WriteLine($"Id: {me.Id}");
             Console.WriteLine($"Display Name: {me.DisplayName}");
             Console.WriteLine($"Email: {me.Mail}");
-        }
-
-        private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
-        {
-            GraphServiceClient graphServiceClient = new GraphServiceClient(graphApiUrl,
-                                                                 new DelegateAuthenticationProvider(
-                                                                     async (requestMessage) =>
-                                                                     {
-                                                                         await Task.Run(() =>
-                                                                         {
-                                                                             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                                         });
-                                                                     }));
-
-            return graphServiceClient;
         }
     }
 }

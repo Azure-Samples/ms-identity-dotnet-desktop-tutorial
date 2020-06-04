@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Console_Interactive_CustomWebUI.CustomWebUI
+namespace Console_Interactive_CustomWebUI.CustomWebBrowser
 {
     internal class SingleMessageTcpListener : IDisposable
     {
