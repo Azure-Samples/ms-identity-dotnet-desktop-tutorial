@@ -2,7 +2,7 @@
 services: active-directory
 platforms: dotnet
 author: TiagoBrenck
-level: 300
+level: 400
 client: .NET Desktop (Console)
 service: Microsoft Graph
 endpoint: Microsoft identity platform
@@ -14,10 +14,10 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph using custom web UI"
+description: "This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph using custom web browser"
 ---
 
-# Using the Microsoft identity platform to call Microsoft Graph API with custom web UI.
+# Using the Microsoft identity platform to call Microsoft Graph API with custom web browser.
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/<BuildNumber>/badge)
 
@@ -25,19 +25,19 @@ description: "This sample demonstrates a .NET Desktop (Console) application call
 
 ### Overview
 
-This sample demonstrates how to use a custom web UI on MSAL.NET.
+This sample demonstrates how to use a custom web browser on MSAL.NET.
 
->Note: **Custom web UI is only available on .NET Core applications.**
+>Note: **Custom web browser is only available on .NET Core applications.**
 
 1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from Azure Active Directory (Azure AD).
-2. The custom web UI will intercept the authorization code request triggered by MSAL and execute it on a new browser tab that is being listened.
-3. Once the authorization request is finished (successfully or not), the custom web UI will print a custom HTML block and return the response to MSAL.
+2. The custom web browser will intercept the authorization code request triggered by MSAL and execute it on a new browser tab that is being listened.
+3. Once the authorization request is finished (successfully or not), the custom web browser will print a custom HTML block and return the response to MSAL.
 
 ### Scenario
 
 The console application:
 
-- gets an access token from Azure AD interactively using a custom web UI (restricted to **.net core only**)
+- gets an access token from Azure AD interactively using a custom web browser (restricted to **.net core only**)
 - and then calls the Microsoft Graph `/me` endpoint to get the user information, which it then displays in the console.
 
 ![Overview](./ReadmeFiles/topology.png)
@@ -46,7 +46,7 @@ The console application:
 
 To run this sample, you'll need:
 
-- [Visual Studio 2017](https://aka.ms/vsdownload)
+- [Visual Studio 2019](https://aka.ms/vsdownload)
 - An Internet connection
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
 - A user account in your Azure AD tenant. This sample will not work with a Microsoft account (formerly Windows Live account). Therefore, if you signed in to the [Azure portal](https://portal.azure.com) with a Microsoft account and have never created a user account in your directory before, you need to do that now.
