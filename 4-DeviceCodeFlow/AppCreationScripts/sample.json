@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "Sign-in a user with the Microsoft identity platform using the device code flow and  call Microsoft Graph on the user's behalf.",
+    "Title": "Sign-in a user with the Microsoft identity platform using the device code flow and call Microsoft Graph on the user's behalf.",
     "Level": 100,
     "Client": ".NET Desktop (Console)",
     "Service": "Microsoft Graph",

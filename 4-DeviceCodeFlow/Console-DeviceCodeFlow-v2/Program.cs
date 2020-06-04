@@ -40,6 +40,12 @@ namespace Console_DeviceCodeFlow_MultiTarget
             await CallMSGraph(graphClient);
         }
 
+        /// <summary>
+        /// Signs in the user using the device code flow and obtains an Access token for MS Graph
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="scopes"></param>
+        /// <returns></returns>
         private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
         {
             // build the AAd authority Url

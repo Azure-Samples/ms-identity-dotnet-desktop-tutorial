@@ -14,7 +14,7 @@ products:
   - azure-active-directory  
   - dotnet
   - office-ms-graph
-description: "This sample demonstrates a .NET Desktop (Console) application authenticating with device code flow"
+description: "This sample demonstrates a .NET Desktop (Console) application authenticating a user with the device code flow"
 ---
 # Sign-in a user with the Microsoft identity platform using the device code flow and call Microsoft Graph.
 
@@ -24,10 +24,10 @@ description: "This sample demonstrates a .NET Desktop (Console) application auth
 
 ### Overview
 
-This sample demonstrates a .NET Desktop (Console) application calling The Microsoft Graph.
+This sample demonstrates a .NET Desktop (Console) application  authenticating a user with the [device code flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-device-code) and calling Microsoft Graph on behalf of the user. This flow allows users to sign in to input-constrained devices such as a smart TV, IoT device, or printer. To enable this flow, the device has the user visit a webpage in their browser on another device to sign in. Once the user signs in, the device is able to get access tokens and refresh tokens as needed.
 
-1. The .NET Desktop (Console) application uses the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview) to obtain a JWT [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD), using device code flow.
-2. The access token is used as a bearer token to authenticate the user when calling the Microsoft Graph.
+1. The .NET Desktop (Console) application uses the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview) to sign-in a user and obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for Microsoft Graph from Azure Active Directory (Azure AD). The user is  using the [device code flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-device-code).
+2. The access token is used as a bearer token to authenticate the user when calling Microsoft Graph.
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
@@ -35,8 +35,8 @@ This sample demonstrates a .NET Desktop (Console) application calling The Micros
 
 ### Scenario
 
-This console application displays a code and a URL. the user will open the URL in the browser and enter the code to start the authentication process.
-Once the authentication process completes, the console application will resume and call Microsoft Graph on behalf of the user.
+This console application displays a code and a URL which the user will open in a browser on a device with an available input device (keyboard). The user will open the URL in the browser and enter the code to start the authentication process.
+Once the authentication process completes, the console application will resume and call Microsoft Graph on behalf of the user to fetch some information and prints it on the screen.
 
 ## How to run this sample
 
@@ -141,6 +141,7 @@ Use a web browser to open the Url (https://microsoft.com/devicelogin) that is di
 The relevant code for this sample is in the `Program.cs` file, in the Main() method. The steps are:
 
 1- We use the  `appsettings.json` as our configuration file and build the **PublicClientApplicationOptions** object with the app registration settings
+
 ```csharp
 var builder = new ConfigurationBuilder()
     .SetBasePath(System.IO.Directory.GetCurrentDirectory())
@@ -186,7 +187,7 @@ private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApp
 }
 ```
 
-3- The method **SignInAndInitializeGraphServiceClient** initializes the Graph SDK.
+3- The method **SignInAndInitializeGraphServiceClient** initializes the Graph SDK with the access token we obtained earlier in **SignInUserAndGetTokenUsingMSAL**.
 
 ```csharp
 private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
@@ -205,7 +206,7 @@ private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceCli
 private static async Task CallMSGraph(GraphServiceClient graphClient)
 {
     var me = await graphClient.Me.Request().GetAsync();
-   
+
     // Printing the results
     Console.Write(Environment.NewLine);
     Console.WriteLine("-------- Data from call to MS Graph --------");
@@ -215,6 +216,7 @@ private static async Task CallMSGraph(GraphServiceClient graphClient)
     Console.WriteLine($"Email: {me.Mail}");
 }
 ```
+
 ## Community Help and Support
 
 Use [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) to get support from the community.
