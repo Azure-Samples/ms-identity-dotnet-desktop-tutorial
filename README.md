@@ -29,7 +29,7 @@ This repository contains a progressive tutorial made of the following parts:
 | -------------------------------- | -------------------------------- |
 | [1. Calling Microsoft Graph](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/1-Calling-MSGraph) | This first part presents how to acquire an access token for Microsoft Graph, on Azure AD, Azure B2C and Azure National Clouds. Each scenario is separated on its correspondent sub-folder.|
 | [2. Cross platform token cache](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/2-TokenCache) | This step shows how to configure a cross platform token cache (Windows, Linux and MAC) leveraging `Microsoft.Identity.Client.Extensions.Msal` |
-| [3. Custom Web UI](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/3-CustomWebUI) | Under construction |
+| [3. Custom Web UI](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/3-CustomWebUI) | This step shows how to customize the UI on the authorization response for a console application. |
 | [4. Device Code flow](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/4-DeviceCodeFlow) | This step shows how to authenticate using device code flow.|
 
 ## Prerequisites
