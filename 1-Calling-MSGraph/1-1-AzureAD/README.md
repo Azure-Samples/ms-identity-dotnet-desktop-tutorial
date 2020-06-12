@@ -17,7 +17,7 @@ products:
 description: "This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph"
 ---
 
-# Using the Microsoft identity platform to call Microsoft Graph API from a multi-target console application.
+# Using the Microsoft identity platform to call Microsoft Graph API from a multi-target console application
 
 ![Build badge](https://identitydivision.visualstudio.com/_apis/public/build/definitions/a7934fdd-dcde-4492-a406-7fad6ac00e17/<BuildNumber>/badge)
 
@@ -27,14 +27,14 @@ description: "This sample demonstrates a .NET Desktop (Console) application call
 
 This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph.
 
-1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from Azure Active Directory (Azure AD):
+1. The .NET Desktop (Console) application uses the [Microsoft Authentication Library (MSAL)](https://docs.microsoft.com/azure/active-directory/develop/msal-overview) to obtain a JWT [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD):
 2. The access token is used as a bearer token to authenticate the user when calling Microsoft Graph.
 
 ### Scenario
 
 The console application:
 
-- gets an access token from Azure AD interactively
+- gets an access token from Azure AD after interactively signing the user.
 - and then calls the Microsoft Graph `/me` endpoint to get the user information, which it then displays in the console.
 
 ![Overview](./ReadmeFiles/topology.png)
@@ -146,73 +146,81 @@ Start the application, sign-in and check the result in the console.
 
 The relevant code for this sample is in the `Program.cs` file, in the Main() method. The steps are:
 
-1- Use `appsettings.json` as a configuration file.
+1- We use the  `appsettings.json` as our configuration file and build the **PublicClientApplicationOptions** object with the app registration settings  
 
 ```csharp
-private static IConfiguration configuration;
+   var builder = new ConfigurationBuilder()
+         .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+         .AddJsonFile("appsettings.json");
 
-var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+   configuration = builder.Build();
 
-configuration = builder.Build();
+   appConfiguration = configuration
+         .Get<PublicClientApplicationOptions>();
 ```
 
-2- Create the MSAL public client application.
+2- The method **SignInUserAndGetTokenUsingMSAL** contains the code to initialize MSAL and get an access token for MS Graph.
 
 ```csharp
-var app = PublicClientApplicationBuilder.Create(appConfiguration.ClientId)
-                                                    .WithAuthority(_authority)
-                                                    .WithRedirectUri(appConfiguration.RedirectUri)
-                                                    .Build();
-```
-
-3- Try to acquire an access token for Microsoft Graph silently, but if it fails, do it interactively.
-
-```csharp
-string[] scopes = new[] { "user.read" };
-AuthenticationResult result;
-
-try
+private static async Task<string> SignInUserAndGetTokenUsingMSAL(PublicClientApplicationOptions configuration, string[] scopes)
 {
-    var accounts = await app.GetAccountsAsync();
-    result = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
-                .ExecuteAsync();
-}
-catch (MsalUiRequiredException)
-{
-    result = await app.AcquireTokenInteractive(scopes)
-                .ExecuteAsync();
-}
-```
+   string authority = string.Concat(configuration.Instance, configuration.TenantId);
 
-4- Instantiate `GraphServiceClient` (from [Microsoft.Graph NuGet package](https://docs.microsoft.com/graph/sdks/sdk-installation)) using the Microsoft Graph access token acquired in the previous step.
+   // Initialize the MSAL library by building a public client application
+   application = PublicClientApplicationBuilder.Create(configuration.ClientId)
+                                             .WithAuthority(authority)
+                                             .WithDefaultRedirectUri()
+                                             .Build();
 
-```csharp
-private static GraphServiceClient GetGraphServiceClient(string accessToken, string graphApiUrl)
-{
-    GraphServiceClient graphServiceClient = new GraphServiceClient(graphApiUrl,
-                                                            new DelegateAuthenticationProvider(
-                                                                async (requestMessage) =>
-                                                                {
-                                                                    await Task.Run(() =>
-                                                                    {
-                                                                        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                                                                    });
-                                                                }));
+   AuthenticationResult result;
+   try
+   {
+         var accounts = await application.GetAccountsAsync();
+         result = await application.AcquireTokenSilent(scopes, accounts.FirstOrDefault())
+         .ExecuteAsync();
+   }
+   catch (MsalUiRequiredException ex)
+   {
+         result = await application.AcquireTokenInteractive(scopes)
+         .WithClaims(ex.Claims)
+         .ExecuteAsync();
+   }
 
-    return graphServiceClient;
+   return result.AccessToken;
 }
 ```
 
-5- Call Microsoft Graph `/me` endpoint, using [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/create-requests?tabs=CS).
+3- The method **SignInAndInitializeGraphServiceClient** initializes the Graph SDK
 
 ```csharp
-string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
+ private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceClient(PublicClientApplicationOptions configuration, string[] scopes)
+{
+   GraphServiceClient graphClient = new GraphServiceClient(MSGraphURL,
+         new DelegateAuthenticationProvider(async (requestMessage) =>
+         {
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", await SignInUserAndGetTokenUsingMSAL(configuration, scopes));
+         }));
 
-var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
+   return await Task.FromResult(graphClient);
+}
+```
 
-var me = await graphClient.Me.Request().GetAsync();
+4- The method **CallMSGraph** uses the initialized Graph SDK to make a call to Graph and fetch data from it
+
+```csharp
+private static async Task CallMSGraph(GraphServiceClient graphClient)
+        {
+            var me = await graphClient.Me.Request().GetAsync();
+
+            // Printing the results
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("-------- Data from call to MS Graph --------");
+            Console.Write(Environment.NewLine);
+            Console.WriteLine($"Id: {me.Id}");
+            Console.WriteLine($"Display Name: {me.DisplayName}");
+            Console.WriteLine($"Email: {me.Mail}");
+        }
+}
 ```
 
 ## Community Help and Support
