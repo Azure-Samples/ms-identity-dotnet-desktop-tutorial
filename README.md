@@ -13,7 +13,7 @@ description: "Learn how to acquire an access token on a console application."
 urlFragment: "ms-identity-dotnet-desktop-tutorial"
 ---
 
-![.NET Core](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/workflows/.NET%20Core/badge.svg)
+![[.NET Core](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/workflows/.NET%20Core/badge.svg)](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/actions?query=workflow%3A%22.NET+Core%22)
 
 # Acquiring an access token using a console application and call APIs with the Microsoft identity platform for developers
 
