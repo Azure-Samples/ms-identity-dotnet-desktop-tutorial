@@ -136,6 +136,8 @@ Clean the solution, rebuild the solution, and run it.
 
 Use a web browser to open the Url (https://microsoft.com/devicelogin) that is displayed in console app. Input the code presented in the console , sign-in and check the result of the operation back in the console.
 
+> [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUREhEVDBOTFBMUVRPUElBUE5WMjdPQ1RaMiQlQCN0PWcu)
+
 ## About the code
 
 The relevant code for this sample is in the `Program.cs` file, in the Main() method. The steps are:
