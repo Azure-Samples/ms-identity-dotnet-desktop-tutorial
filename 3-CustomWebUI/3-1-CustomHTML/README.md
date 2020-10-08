@@ -142,6 +142,8 @@ Clean the solution, rebuild the solution, and run it.
 
 Start the application, sign-in and check the result in the console.
 
+> [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUREhEVDBOTFBMUVRPUElBUE5WMjdPQ1RaMiQlQCN0PWcu)
+
 ## About the code
 
 MSAL has the class [SystemWebViewOptions.cs](https://docs.microsoft.com/dotnet/api/microsoft.identity.client.systemwebviewoptions?view=azure-dotnet) which allows you to set properties to customize the UI after the authentication request.
