@@ -202,6 +202,7 @@ private async static Task<GraphServiceClient> SignInAndInitializeGraphServiceCli
 
     return await Task.FromResult(graphClient);
 }
+```
 
 4- The method **CallMSGraph** uses the initialized Graph SDK to make a call to Graph and fetch data from it.
 ```csharp
