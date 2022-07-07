@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
@@ -15,13 +15,13 @@ namespace Console_TokenCache
         private static IConfiguration configuration;
         private static string _authority;
 
-        static async Task Main(string[] args)
+        static async Task Main(string[] _)
         {
             // Using appsettings.json as our configuration settings
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
-            
+
             configuration = builder.Build();
 
             // Loading PublicClientApplicationOptions from the values set on appsettings.json
@@ -57,25 +57,18 @@ namespace Console_TokenCache
 
             // Scope for Microsoft Graph
             string[] scopes = new[] { "user.read" };
-
-            AuthenticationResult result = await AcquireToken(app, scopes, false);
-
             string graphApiUrl = configuration.GetValue<string>("GraphApiUrl");
-            // Instantiating GraphServiceClient and using the access token acquired above.
-            var graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
 
-            // Calling the /me endpoint of Microsoft Graph
-            var me = await graphClient.Me.Request().GetAsync();
-
-            // Printing the results
-            DisplayGraphResult(result, me);
+            AuthenticationResult result;
+            GraphServiceClient graphClient;
+            User me;
 
             while (true)
             {
                 // Display menu
                 Console.WriteLine("------------ MENU ------------");
-                Console.WriteLine("1. Acquire Token Silent / Interactive (not using embeded view)");
-                Console.WriteLine("2. Acquire Token Silent / Interactive (using embeded view, currently not supported on .NET Core)");
+                Console.WriteLine("1. Acquire Token Silent / Interactive (not using embedded view)");
+                Console.WriteLine("2. Acquire Token Silent / Interactive (using embedded view, currently not supported on .NET Core)");
                 Console.WriteLine("3. Display Accounts (reads the cache)");
                 Console.WriteLine("4. Clear cache");
                 Console.WriteLine("x. Exit app");
@@ -89,7 +82,7 @@ namespace Console_TokenCache
                         case '1': // Silent / Interactive
                             Console.Clear();
                             Console.WriteLine("Acquiring token from the cache (silently), if it fails do it interactively");
-                            
+
                             result = await AcquireToken(app, scopes, false);
 
                             graphClient = GetGraphServiceClient(result.AccessToken, graphApiUrl);
@@ -148,8 +141,8 @@ namespace Console_TokenCache
                     Console.WriteLine("Exception : " + ex);
                     Console.ResetColor();
                     Console.WriteLine("Hit Enter to continue");
-
                     Console.Read();
+                    Console.Clear();
                 }
             }
         }
