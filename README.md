@@ -5,7 +5,7 @@ languages:
 - powershell
 products:
 - azure
-- azure-active-directory
+- microsoft-entra-id
 - dotnet
 - aspnet
 - ms-graph
@@ -19,7 +19,7 @@ urlFragment: "ms-identity-dotnet-desktop-tutorial"
 
 ## About this sample
 
-A multi-target console application (.Net Core and .Net Framework) that acquires an access token for a protected API on Azure, using Microsoft identity platform for developers. There are steps demonstrating this scenario on Azure AD, Azure AD B2C and National Clouds.
+A multi-target console application (.Net Core and .Net Framework) that acquires an access token for a protected API on Azure, using Microsoft identity platform for developers. There are steps demonstrating this scenario on Microsoft Entra ID, Azure Active Directory B2C and National Clouds.
 
 On later steps, you will learn how to enrich the console application with a cross platform token cache and a custom Web UI (for .NET Core only).
 
@@ -29,7 +29,7 @@ This repository contains a progressive tutorial made of the following parts:
 
 | Sub folder                       | Description                      |
 | -------------------------------- | -------------------------------- |
-| [1. Calling Microsoft Graph](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/1-Calling-MSGraph) | This first part presents how to acquire an access token for Microsoft Graph, on Azure AD, Azure B2C and Azure National Clouds. Each scenario is separated on its correspondent sub-folder.|
+| [1. Calling Microsoft Graph](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/1-Calling-MSGraph) | This first part presents how to acquire an access token for Microsoft Graph, on Microsoft Entra ID, Azure B2C and Azure National Clouds. Each scenario is separated on its correspondent sub-folder.|
 | [2. Cross platform token cache](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/2-TokenCache) | This step shows how to configure a cross platform token cache (Windows, Linux and MAC) leveraging `Microsoft.Identity.Client.Extensions.Msal` |
 | [3. Custom Web UI](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/3-CustomWebUI) | This step shows how to customize the UI on the authorization response for a console application. |
 | [4. Device Code flow](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/4-DeviceCodeFlow) | This step shows how to authenticate using device code flow.|
@@ -38,8 +38,8 @@ This repository contains a progressive tutorial made of the following parts:
 
 - Install .NET Core for Windows by following the instructions at [dot.net/core](https://dot.net/core).
 - An Internet connection
-- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
-- A user account in your Azure AD tenant.
+- a Microsoft Entra tenant. For more information on how to get a Microsoft Entra tenant, see [How to get a Microsoft Entra tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-howto-tenant/)
+- A user account in your Microsoft Entra tenant.
 
 ## Setup
 
