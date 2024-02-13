@@ -11,7 +11,7 @@ languages:
   - csharp  
 products:
   - azure
-  - azure-active-directory  
+  - microsoft-entra-id  
   - dotnet
   - office-ms-graph
 description: "This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph on National clouds"
@@ -25,7 +25,7 @@ description: "This sample demonstrates a .NET Desktop (Console) application call
 
 This sample demonstrates a .NET Desktop (Console) application calling Microsoft Graph on National clouds.
 
-1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from a National cloud Azure Active Directory (Azure AD)
+1. The .NET Desktop (Console) application uses the Microsoft Authentication Library (MSAL) to obtain a JWT access token from a National cloud Microsoft Entra ID
 2. The access token is used as a bearer token to authenticate the user when calling Microsoft Graph.
 
 ![Overview](./ReadmeFiles/topology.png)
@@ -50,7 +50,7 @@ More details in [Authentication in National Clouds](https://docs.microsoft.com/e
 
 To run this sample, you can follow the same steps on [the first sample in this tutorial](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/1-Calling-MSGraph/1-1-AzureAD) but using the desired National cloud portal to create the application.
 
-To use the PowerShell script that **automatically** creates the Azure AD application for this sample in your National cloud, please use the parameter `-AzureEnvironmentName` [as described in this document](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/blob/master/1-Calling-MSGraph/1-1-AzureAD/AppCreationScripts/AppCreationScripts.md#running-the-script-on-azure-sovereign-clouds).
+To use the PowerShell script that **automatically** creates the Microsoft Entra application for this sample in your National cloud, please use the parameter `-AzureEnvironmentName` [as described in this document](https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/blob/master/1-Calling-MSGraph/1-1-AzureAD/AppCreationScripts/AppCreationScripts.md#running-the-script-on-azure-sovereign-clouds).
 
 ### Configure the client app (Console-Interactive-MultiTarget-v2) to use your app registration
 
@@ -58,8 +58,8 @@ Open the project in your IDE (like Visual Studio) to configure the code.
 
 1. Open the `Console-Interactive-MultiTarget\appsettings.json` file
 1. Find the app key `Instance` and replace the existing value with the [correspondent endpoint for your National clouds](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-national-cloud#azure-ad-authentication-endpoints). 
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `Console-Interactive-MultiTarget-v2` application copied from the Azure portal.
-1. Find the app key `TenantId` and replace the existing value with your Azure AD tenant ID.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `Console-Interactive-MultiTarget-v2` application copied from the Microsoft Entra admin center.
+1. Find the app key `TenantId` and replace the existing value with your Microsoft Entra tenant ID.
 1. Find the app key `GraphApiUrl` and replace the existing value with the Microsoft Graph endpoint for your National clouds. [See this reference for more info on which graph endpoint to use](https://docs.microsoft.com/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints).
 
 ## Community Help and Support
@@ -89,8 +89,8 @@ For more information, see MSAL.NET's conceptual documentation:
 - [Quickstart: Register an application with the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 - [Quickstart: Configure a client application to access web APIs](https://docs.microsoft.com/azure/active-directory/develop/quickstart-configure-app-access-web-apis)
 
-- [Understanding Azure AD application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
+- [Understanding Microsoft Entra application consent experiences](https://docs.microsoft.com/azure/active-directory/develop/application-consent-experience)
 - [Understand user and admin consent](https://docs.microsoft.com/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#understand-user-and-admin-consent)
-- [Application and service principal objects in Azure Active Directory](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
+- [Application and service principal objects in Microsoft Entra ID](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals)
 
-For more information about how OAuth 2.0 protocols work in this scenario and other scenarios, see [Authentication Scenarios for Azure AD](http://go.microsoft.com/fwlink/?LinkId=394414).
+For more information about how OAuth 2.0 protocols work in this scenario and other scenarios, see [Authentication Scenarios for Microsoft Entra ID](http://go.microsoft.com/fwlink/?LinkId=394414).
