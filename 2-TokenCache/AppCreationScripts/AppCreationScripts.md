@@ -124,7 +124,7 @@ Of course, in real life, you might already get the password as a `SecureString`.
 
   if you want to create the apps in a particular tenant, you can use the following option:
 - open the [Microsoft Entra admin center](https://entra.microsoft.com)
-- Select the Microsoft Entra ID tenant you are interested in (in the combo-box below your name on the top right of the browser window)
+- Select the Microsoft Entra tenant you are interested in (in the combo-box below your name on the top right of the browser window)
 - Find the "Active Directory" object in this tenant
 - Go to **Properties** and copy the content of the **Directory Id** property
 - Then use the full syntax to run the scripts:
